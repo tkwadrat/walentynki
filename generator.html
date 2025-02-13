@@ -108,24 +108,24 @@
             font-size: 20px;
             margin-top: 20px;
         }
-        .share-description {
+        .przeslij-description {
             color: #666;
             margin: 5px 0 15px 0;
             font-size: 14px;
         }
-        .share-section {
+        .przeslij-section {
             background-color: #fff1f1;
             padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
             padding-top: 0px;
         }
-        .share-container {
+        .przeslij-container {
             display: flex;
             gap: 10px;
             margin-top: 10px;
         }
-        .share-link {
+        .przeslij-link {
             flex-grow: 1;
             padding: 10px;
             border: 2px solid #ff4d4d;
@@ -177,11 +177,11 @@
             <textarea id="message" placeholder="Napisz liścik..." oninput="updateNote()"></textarea>
         </div>
         
-        <div class="share-section">
+        <div class="przeslij-section">
             <h2>Udostępnij walentynkę</h2>
-        <p class="share-description">Skopiuj link, żeby przesłać walentynkę</p>
-            <div class="share-container">
-                <input type="text" id="shareLink" class="share-link" readonly>
+        <p class="przeslij-description">Skopiuj link, żeby przesłać walentynkę</p>
+            <div class="przeslij-container">
+                <input type="text" id="przeslijLink" class="przeslij-link" readonly>
                 <button onclick="copyToClipboard()" class="copy-button">📋 Kopiuj</button>
             </div>
         </div>
@@ -223,11 +223,11 @@
             const imageUrl = document.getElementById("valentineImage").src;
             const message = encodeURIComponent(document.getElementById("message").value);
             const shareUrl = `${window.location.origin}${window.location.pathname}?image=${encodeURIComponent(imageUrl)}&message=${message}`;
-            document.getElementById("shareLink").value = shareUrl;
+            document.getElementById("przeslijLink").value = shareUrl;
         }
 
         function copyToClipboard() {
-            const copyText = document.getElementById("shareLink");
+            const copyText = document.getElementById("przeslijLink");
             copyText.select();
             copyText.setSelectionRange(0, 99999);
             document.execCommand("copy");
