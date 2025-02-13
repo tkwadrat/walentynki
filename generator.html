@@ -69,6 +69,16 @@
             transform: translateX(-50%);
             font-size: 20px;
         }
+        .input-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
         textarea {
             width: calc(100% - 16px);
             margin: 10px 0;
@@ -84,17 +94,51 @@
             outline: none;
             box-shadow: 0 0 8px rgba(255, 77, 77, 0.2);
         }
-        h1 {
+        h1, h2 {
             color: #ff4d4d;
             font-size: 22px;
-            margin-bottom: 30px;
+            margin-top: 0px
+            margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(255, 77, 77, 0.2);
             font-family: 'Arial', sans-serif;
             position: relative;
             display: inline-block;
         }
-        button {
+        h2 {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .share-description {
+            color: #666;
+            margin: 5px 0 15px 0;
+            font-size: 14px;
+        }
+        .share-section {
+            background-color: #fff1f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            padding-top: 0px;
+        }
+        .share-container {
+            display: flex;
+            gap: 10px;
             margin-top: 10px;
+        }
+        .share-link {
+            flex-grow: 1;
+            padding: 10px;
+            border: 2px solid #ff4d4d;
+            border-radius: 5px;
+            background: #fff;
+            color: #333;
+            font-size: 14px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        button {
+            margin-top: 0px;
             padding: 10px;
             width: 100%;
             border: none;
@@ -104,6 +148,10 @@
             cursor: pointer;
             font-size: 16px;
         }
+        .copy-button {
+            width: auto;
+            white-space: nowrap;
+        }
         .footer {
             margin-top: auto;
             padding: 20px;
@@ -111,18 +159,6 @@
             color: #ff4d4d;
             font-weight: bold;
             font-size: 16px;
-        }
-        #popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-            display: none;
-            z-index: 1000;
         }
     </style>
 </head>
@@ -133,16 +169,22 @@
             <img id="valentineImage" src="https://productvision.pl/wp-content/uploads/2025/02/1.png" alt="Kartka Walentynkowa">
             <div id="noteDisplay" class="message-overlay" style="display: none;"></div>
         </div>
-        <textarea id="message" placeholder="Napisz liścik..." oninput="updateNote()"></textarea>
+        
         <button onclick="randomImage()">🔄 Wylosuj inną kartkę</button>
-        <button onclick="showPopup()">🔗 Udostępnij tę walentynkę</button>
-    </div>
 
-    <div id="popup">
-        <p>Skopiuj link do swojej kartki:</p>
-        <input type="text" id="popupLink" style="width: 100%; padding: 5px;" readonly>
-        <button onclick="copyToClipboard()">📋 Kopiuj</button>
-        <button onclick="closePopup()">❌ Zamknij</button>
+        <div class="input-group">
+            <label class="input-label" for="message">Liścik walentynkowy:</label>
+            <textarea id="message" placeholder="Napisz liścik..." oninput="updateNote()"></textarea>
+        </div>
+        
+        <div class="share-section">
+            <h2>Udostępnij tę walentynkę</h2>
+        <p class="share-description">Skopiuj link, żeby przesłać tę walentynkę</p>
+            <div class="share-container">
+                <input type="text" id="shareLink" class="share-link" readonly>
+                <button onclick="copyToClipboard()" class="copy-button">📋 Kopiuj</button>
+            </div>
+        </div>
     </div>
 
     <footer class="footer">
@@ -161,6 +203,7 @@
         function randomImage() {
             const randomIndex = Math.floor(Math.random() * images.length);
             document.getElementById("valentineImage").src = images[randomIndex];
+            updateShareLink();
         }
 
         function updateNote() {
@@ -173,27 +216,22 @@
             } else {
                 noteDisplay.style.display = "none";
             }
+            updateShareLink();
         }
 
-        function showPopup() {
+        function updateShareLink() {
             const imageUrl = document.getElementById("valentineImage").src;
             const message = encodeURIComponent(document.getElementById("message").value);
             const shareUrl = `${window.location.origin}${window.location.pathname}?image=${encodeURIComponent(imageUrl)}&message=${message}`;
-            
-            document.getElementById("popupLink").value = shareUrl;
-            document.getElementById("popup").style.display = "block";
+            document.getElementById("shareLink").value = shareUrl;
         }
 
         function copyToClipboard() {
-            const copyText = document.getElementById("popupLink");
+            const copyText = document.getElementById("shareLink");
             copyText.select();
             copyText.setSelectionRange(0, 99999);
             document.execCommand("copy");
             alert("Link skopiowany!");
-        }
-
-        function closePopup() {
-            document.getElementById("popup").style.display = "none";
         }
 
         // Otwieranie udostępnionego linku z kartką i wiadomością
@@ -210,6 +248,9 @@
             document.getElementById("message").value = decodedMessage;
             updateNote();
         }
+
+        // Initialize share link on page load
+        updateShareLink();
     </script>
 </body>
 </html>
