@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produktowa walentynka dla Ciebie | ProductCraft.pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -82,7 +83,6 @@
         }
         textarea {
             width: calc(100% - 16px);
-            /* margin: 10px 0; */
             padding: 12px 8px;
             border-radius: 8px;
             border: 2px solid #ff4d4d;
@@ -153,6 +153,11 @@
             width: auto;
             white-space: nowrap;
         }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
         .footer {
             margin-top: auto;
             padding: 20px;
@@ -166,12 +171,15 @@
 <body>
     <div class="card-container">
         <h1>Szepnę Ci coś po produktowemu...</h1>
-        <div class="image-container">
-            <img id="valentineImage" src="https://productvision.pl/wp-content/uploads/2025/02/1.png" alt="Kartka Walentynkowa">
+        <div class="image-container" id="captureArea">
+            <img id="valentineImage" crossorigin="anonymous" src="https://productvision.pl/wp-content/uploads/2025/02/1.png" alt="Kartka Walentynkowa">
             <div id="noteDisplay" class="message-overlay" style="display: none;"></div>
         </div>
         
-        <button onclick="randomImage()">🔄 Wylosuj inną kartkę</button>
+        <div class="button-group">
+            <button onclick="randomImage()">🔄 Wylosuj inną kartkę</button>
+            <button onclick="saveAsImage()">💾 Zapisz kartkę</button>
+        </div>
 
         <div class="input-group">
             <label class="input-label" for="message">Liścik walentynkowy:</label>
@@ -180,7 +188,7 @@
         
         <div class="przeslij-section">
             <h2>Udostępnij walentynkę</h2>
-        <p class="przeslij-description">Skopiuj link, żeby przesłać walentynkę</p>
+            <p class="przeslij-description">Skopiuj link, żeby przesłać walentynkę</p>
             <div class="przeslij-container">
                 <input type="text" id="przeslijLink" class="przeslij-link" readonly>
                 <button onclick="copyToClipboard()" class="copy-button">📋 Kopiuj</button>
@@ -195,17 +203,17 @@
 
     <script>
         const images = [
-            "https://productvision.pl/wp-content/uploads/2025/02/1.png",
-            "https://productvision.pl/wp-content/uploads/2025/02/2.png",
-            "https://productvision.pl/wp-content/uploads/2025/02/3.png", 
-            "https://productvision.pl/wp-content/uploads/2025/02/4.png",
-            "https://productvision.pl/wp-content/uploads/2025/02/5.png",
-            "https://productvision.pl/wp-content/uploads/2025/02/6.png",
-            "https://productvision.pl/wp-content/uploads/2025/02/7.png",
-            "https://productvision.pl/wp-content/uploads/2025/02/8.png", 
-            "https://productvision.pl/wp-content/uploads/2025/02/9.png",
-            "https://productvision.pl/wp-content/uploads/2025/02/10.png",
-            "https://productvision.pl/wp-content/uploads/2025/02/11.png"
+            "https://walentynki.productcraft.pro/1.png",
+            "https://walentynki.productcraft.pro/2.png",
+            "https://walentynki.productcraft.pro/3.png", 
+            "https://walentynki.productcraft.pro/4.png",
+            "https://walentynki.productcraft.pro/5.png",
+            "https://walentynki.productcraft.pro/6.png",
+            "https://walentynki.productcraft.pro/7.png",
+            "https://walentynki.productcraft.pro/8.png", 
+            "https://walentynki.productcraft.pro/9.png",
+            "https://walentynki.productcraft.pro/10.png",
+            "https://walentynki.productcraft.pro/11.png"
         ];
 
         function randomImage() {
@@ -242,12 +250,58 @@
             alert("Link skopiowany!");
         }
 
+        async function saveAsImage() {
+            const captureArea = document.getElementById('captureArea');
+            const valentineImage = document.getElementById('valentineImage');
+            
+            try {
+                // Tworzymy nowy obraz z crossorigin
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                
+                // Czekamy na załadowanie obrazu
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = valentineImage.src;
+                });
+                
+                // Tymczasowo podmieniamy źródło obrazu
+                const originalSrc = valentineImage.src;
+                valentineImage.src = img.src;
+                
+                // Generujemy canvas
+                const canvas = await html2canvas(captureArea, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    backgroundColor: null,
+                    onclone: function(clonedDoc) {
+                        const clonedImg = clonedDoc.getElementById('valentineImage');
+                        clonedImg.src = img.src;
+                    }
+                });
+                
+                // Przywracamy oryginalne źródło
+                valentineImage.src = originalSrc;
+                
+                // Pobieramy plik
+                const link = document.createElement('a');
+                link.download = 'walentynka.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (error) {
+                console.error('Błąd podczas zapisywania obrazu:', error);
+                alert('Wystąpił błąd podczas zapisywania obrazu. Spróbuj ponownie. Jeśli problem się powtarza, spróbuj zapisać ekran.');
+            }
+        }
+
         // Otwieranie udostępnionego linku z kartką i wiadomością
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has("image")) {
             document.getElementById("valentineImage").src = urlParams.get("image");
         } else {
-            // Jeśli nie ma grafiki w linku, wylosuj jedną
             const randomIndex = Math.floor(Math.random() * images.length);
             document.getElementById("valentineImage").src = images[randomIndex];
         }
