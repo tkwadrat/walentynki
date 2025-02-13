@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produktowe Kartki Walentynkowe</title>
+    <title>Generator Kartek Walentynkowych</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,13 +16,28 @@
             flex-direction: column;
         }
         .card-container {
-            width: 480px; /* Increased by 50% from 320px */
+            width: 90%;
+            max-width: 480px;
             margin: 20px auto;
             padding: 20px;
             background: white;
             border-radius: 10px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
             position: relative;
+        }
+        @media (max-width: 520px) {
+            .card-container {
+                padding: 10px;
+                margin: 10px auto;
+            }
+            h1 {
+                font-size: 24px;
+                margin: 10px 0;
+            }
+            .message-overlay {
+                font-size: 14px;
+                padding: 10px;
+            }
         }
         .image-container {
             position: relative;
@@ -101,7 +116,7 @@
             <img id="valentineImage" src="https://productvision.pl/wp-content/uploads/2025/02/1.png" alt="Kartka Walentynkowa">
             <div id="noteDisplay" class="message-overlay" style="display: none;"></div>
         </div>
-        <textarea id="message" placeholder="Napisz liścik..." oninput="updateNote()"></textarea>
+        <textarea id="message" placeholder="Dodaj swoją wiadomość..." oninput="updateNote()"></textarea>
         <button onclick="randomImage()">🔄 Wylosuj inną kartkę</button>
         <button onclick="showPopup()">🔗 Udostępnij</button>
     </div>
@@ -114,7 +129,7 @@
     </div>
 
     <footer class="footer">
-        Made with LOVE by ProductCraft.pro
+        Made with 🖤 by ProductCraft.pro
     </footer>
 
     <script>
@@ -168,6 +183,10 @@
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has("image")) {
             document.getElementById("valentineImage").src = urlParams.get("image");
+        } else {
+            // Jeśli nie ma grafiki w linku, wylosuj jedną
+            const randomIndex = Math.floor(Math.random() * images.length);
+            document.getElementById("valentineImage").src = images[randomIndex];
         }
         if (urlParams.has("message")) {
             const decodedMessage = decodeURIComponent(urlParams.get("message"));
