@@ -3,24 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Kartek Walentynkowych</title>
+    <title>Produktowe Kartki Walentynkowe</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             background-color: #ffe6e6;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         .card-container {
-            width: 320px;
+            width: 480px; /* Increased by 50% from 320px */
             margin: 20px auto;
             padding: 20px;
             background: white;
             border-radius: 10px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .image-container {
+            position: relative;
+            margin-bottom: 20px;
         }
         img {
             width: 100%;
             border-radius: 10px;
+        }
+        .message-overlay {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #ff4d4d;
+            box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+        }
+        .message-overlay::before {
+            content: '❤️';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
         }
         textarea {
             width: 100%;
@@ -42,40 +72,50 @@
             cursor: pointer;
             font-size: 16px;
         }
-        .note {
-            margin-top: 15px;
+        .footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            color: #ff4d4d;
+            font-weight: bold;
             font-size: 16px;
-            font-style: italic;
-            color: #444;
-            background: #ffe6e6;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
         }
-        .share-link {
-            margin-top: 15px;
-            font-size: 14px;
+        #popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
-
     <h1>💌 Generator Kartek Walentynkowych</h1>
     <div class="card-container">
-        <img id="valentineImage" src="https://productvision.pl/wp-content/uploads/2025/02/1.png" alt="Kartka Walentynkowa">
-        <textarea id="message" placeholder="Dodaj swoją wiadomość..." oninput="updateNote()"></textarea>
-        <p id="noteDisplay" class="note"></p>
+        <div class="image-container">
+            <img id="valentineImage" src="https://productvision.pl/wp-content/uploads/2025/02/1.png" alt="Kartka Walentynkowa">
+            <div id="noteDisplay" class="message-overlay" style="display: none;"></div>
+        </div>
+        <textarea id="message" placeholder="Napisz liścik..." oninput="updateNote()"></textarea>
         <button onclick="randomImage()">🔄 Wylosuj inną kartkę</button>
         <button onclick="showPopup()">🔗 Udostępnij</button>
-        <button onclick="shareOnLinkedIn()">🔗 Udostępnij na LinkedIn</button>
     </div>
 
-    <div id="popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);">
+    <div id="popup">
         <p>Skopiuj link do swojej kartki:</p>
         <input type="text" id="popupLink" style="width: 100%; padding: 5px;" readonly>
         <button onclick="copyToClipboard()">📋 Kopiuj</button>
         <button onclick="closePopup()">❌ Zamknij</button>
     </div>
+
+    <footer class="footer">
+        Made with LOVE by ProductCraft.pro
+    </footer>
 
     <script>
         const images = [
@@ -96,7 +136,7 @@
             const noteDisplay = document.getElementById("noteDisplay");
 
             if (message) {
-                noteDisplay.innerHTML = `<strong>💌 Liścik:</strong> ${message}`;
+                noteDisplay.textContent = message;
                 noteDisplay.style.display = "block";
             } else {
                 noteDisplay.style.display = "none";
@@ -124,14 +164,6 @@
             document.getElementById("popup").style.display = "none";
         }
 
-        function shareOnLinkedIn() {
-            const imageUrl = document.getElementById("valentineImage").src;
-            const message = encodeURIComponent(document.getElementById("message").value);
-            const shareUrl = `${window.location.origin}${window.location.pathname}?image=${encodeURIComponent(imageUrl)}&message=${message}`;
-            const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-            window.open(linkedInUrl, '_blank');
-        }
-
         // Otwieranie udostępnionego linku z kartką i wiadomością
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has("image")) {
@@ -143,6 +175,5 @@
             updateNote();
         }
     </script>
-
 </body>
 </html>
